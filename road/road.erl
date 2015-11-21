@@ -9,6 +9,7 @@ main(Filename) ->
   Tuples = group_into_tuples(Tokens, []),
   optimal_path(Tuples).
 
+% erl -noshell -run road cli road.txt
 cli(Filename) ->
   io:format("~p~n",[main(Filename)]),
   erlang:halt(0).
