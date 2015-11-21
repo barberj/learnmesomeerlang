@@ -16,16 +16,13 @@ group_into_tuples([A, B, X| T], Tuples) ->
 
 optimal_path(Map) ->
   {A,B} = lists:foldl(fun shortest_step/2, {{0,[]}, {0,[]}}, Map),
-  {_Dist,Path} = if
-    hd(element(2,A)) =/= {x,0} -> A;
-    hd(element(2,B)) =/= {x,0} -> B
-   end,
-  lists:reverse(Path).
+  {_Dist,Path} = erlang:min(A, B),
+  Path.
 
 shortest_step({A,B,X}, {{DistA,PathA}, {DistB,PathB}}) ->
-  OptA1 = {DistA + A, [{a,A}|PathA]},
-  OptA2 = {DistB + B + X, [{x,X}, {b,B}|PathB]},
-  OptB1 = {DistB + B, [{b,B}|PathB]},
-  OptB2 = {DistA + A + X, [{x,X}, {a,A}|PathA]},
+  OptA1 = {DistA + A, PathA ++ [{a,A}]},
+  OptA2 = {DistB + B + X, PathB ++ [{b,B}, {x,X}]},
+  OptB1 = {DistB + B, PathB ++ [{b,B}]},
+  OptB2 = {DistA + A + X, PathA ++ [{a,A}, {x,X}]},
   {erlang:min(OptA1, OptA2), erlang:min(OptB1, OptB2)}.
 
