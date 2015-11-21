@@ -1,13 +1,20 @@
 -module(road).
--export([main/0]).
+-export([cli/1, main/0]).
 
 main() ->
-  Tokens = tokens_from_file(),
+  main("road.txt").
+
+main(Filename) ->
+  Tokens = tokens_from_file(Filename),
   Tuples = group_into_tuples(Tokens, []),
   optimal_path(Tuples).
 
-tokens_from_file() ->
-  {ok, Binary} = file:read_file("road.txt"),
+cli(Filename) ->
+  io:format("~p~n",[main(Filename)]),
+  erlang:halt(0).
+
+tokens_from_file(Filename) ->
+  {ok, Binary} = file:read_file(Filename),
   [list_to_integer(X) || X <- string:tokens(binary_to_list(Binary), "\r\n\t ")].
 
 group_into_tuples([], Tuples)           -> Tuples;
