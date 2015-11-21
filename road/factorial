@@ -17,5 +17,6 @@ usage() ->
     io:format("usage: factorial integer\n"),
     halt(1).
 
-fac(0) -> 1;
-fac(N) -> N * fac(N-1).
+fac(N, N, Acc) ->   N * Acc;
+fac(N, C, Acc) -> fac(N, C+1, C*Acc).
+fac(N) -> fac(N, 1, 1).
