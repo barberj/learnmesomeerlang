@@ -2,20 +2,20 @@
 %% -*- erlang -*-
 %%! -smp enable -sname factorial -mnesia debug verbose
 main([String]) ->
-    try
-        N = list_to_integer(String),
-        F = fac(N),
-        io:format("factorial ~w = ~w\n", [N,F])
-    catch
-        _:_ ->
-            usage()
-    end;
+  try
+    N = list_to_integer(String),
+    F = fac(N),
+    io:format("factorial ~w = ~w\n", [N,F])
+  catch
+    _:_ ->
+        usage()
+  end;
 main(_) ->
-    usage().
+  usage().
 
 usage() ->
-    io:format("usage: factorial integer\n"),
-    halt(1).
+  io:format("usage: factorial integer\n"),
+  halt(1).
 
 fac(N, N, Acc) ->   N * Acc;
 fac(N, C, Acc) -> fac(N, C+1, C*Acc).
