@@ -1,13 +1,7 @@
 -module(event).
--export([loop/1]).
+-compile(export_all).
 
 -record(state, {server, name="", to_go=[0]}).
-
-%% Because Erlang is limited to about 49 days (49*24*60*60*1000) in
-%% milliseconds, the following function is used
-normalize(N) ->
-  Limit = 49*24*60*60,
-  [N rem Limit | lists:duplicate(N div Limit, Limit)].
 
 loop(S = #state{server=Server, to_go=[T|Next]}) ->
   receive
@@ -18,3 +12,19 @@ loop(S = #state{server=Server, to_go=[T|Next]}) ->
       Next =/= [] -> loop(S#state{to_go=Next})
     end
   end.
+
+start(EventName, Delay) ->
+  spawn(?MODULE, init, [self(), EventName, Delay]).
+
+start_link(EventName, Delay) ->
+  spawn_link(?MODULE, init, [self(), EventName, Delay]).
+
+%%% Event's innards
+init(Server, EventName, Delay) ->
+  loop(#state{server=Server, name=EventName, to_go=normalize(Delay)}).
+
+%% Because Erlang is limited to about 49 days (49*24*60*60*1000) in
+%% milliseconds, the following function is used
+normalize(N) ->
+  Limit = 49*24*60*60,
+  [N rem Limit | lists:duplicate(N div Limit, Limit)].
