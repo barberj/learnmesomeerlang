@@ -5,7 +5,7 @@
 
 loop(S = #state{server=Server, to_go=[T|Next]}) ->
   receive
-    {Server, Ref, cancel}    -> Server ! {Ref, ok}
+    {Server, Ref, cancel} -> Server ! {Ref, ok}
   after T * 1000 ->
     if
       Next =:= [] -> Server ! {done, S#state.name};
@@ -18,6 +18,18 @@ start(EventName, Delay) ->
 
 start_link(EventName, Delay) ->
   spawn_link(?MODULE, init, [self(), EventName, Delay]).
+
+cancel(Pid) ->
+  %% Monitor in case the process is already dead
+  Ref = erlang:monitor(process, Pid),
+  Pid ! {self(), Ref, cancel},
+  receive
+    {Ref, ok} ->
+      erlang:demonitor(Ref, [flush]),
+      ok;
+    {'DOWN', Ref, process, Pid, _Reason} ->
+      ok
+  end.
 
 %%% Event's innards
 init(Server, EventName, Delay) ->
